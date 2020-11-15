@@ -5,6 +5,39 @@ import numpy as np
 import os
 from pydub import AudioSegment
 from pydub.playback import play
+import csv
+from datetime import datetime
+import pandas as pd
+from PIL import Image
+from io import BytesIO
+import base64
+
+import warnings
+warnings.filterwarnings('ignore')
+
+def get_time():
+    d = datetime.now().strftime("%m:%d:%Y-%H:%M:%S")
+    return d
+
+def write_data_on_csv(filename, listdata):
+    with open(filename, mode='a') as f:
+        fw = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        fw.writerow(listdata)
+
+def get_thumbnail(path):
+    i = Image.open(path)
+    i.thumbnail((300, 300), Image.LANCZOS)
+    return i
+
+def image_base64(im):
+    if isinstance(im, str):
+        im = get_thumbnail(im)
+    with BytesIO() as buffer:
+        im.save(buffer, 'jpeg')
+        return base64.b64encode(buffer.getvalue()).decode()
+
+def image_formatter(im):
+    return f'<img src="data:image/jpeg;base64,{image_base64(im)}">'
 
 def findLargestBB(bbs):
     areas = [w*h for x,y,w,h in bbs]
@@ -21,12 +54,9 @@ def page_mask():
 
     cap = cv2.VideoCapture(0)
 
-    choice = st.radio(label="", options=["Start","Stop"], index=1)
-    if choice =="Stop":
-        st.subheader("Mask Detector: Stopped")
-        cap.release()
-    
-    else:
+    choice = st.radio(label="", options=["Start","Stop","Analisi"], index=1)
+ 
+    if choice=="Start":
         
         st.subheader("Mask Detector: Started")
 
@@ -77,6 +107,11 @@ def page_mask():
                         song = AudioSegment.from_wav(os.path.join("audio","procedere.wav"))
                         play(song)
                         speak_yes=0
+                        
+                        time_print = get_time()
+                        storage_url = os.path.join("storage", "mask", time_print+".png")
+                        cv2.imwrite(storage_url, im_color)
+                        write_data_on_csv(filename="data.csv",listdata=[time_print,"mask", storage_url])
 
                     speak_no=0
                 else:
@@ -87,11 +122,38 @@ def page_mask():
                         play(song)
                         speak_no=0
 
+                        time_print = get_time()
+                        storage_url = os.path.join("storage", "no-mask", time_print+".png")
+                        cv2.imwrite(storage_url, im_color)
+                        write_data_on_csv(filename="data.csv",listdata=[time_print,"no-mask",storage_url])
+
                     speak_yes = 0
 
             image_placeholder.image(im_color, channels="BGR", use_column_width=True)
             time.sleep(0.033) # 30 Hz
 
+    elif choice=="Analisi":
+        df  =  pd.read_csv("data.csv", names=["date","check","urls"])
+        df["date"] = pd.to_datetime(df["date"], format="%m:%d:%Y-%H:%M:%S", errors='ignore') # pandas timestamp datetime    
+
+        opts = ["mask","no-mask","all"]
+        sel_opt = st.selectbox('Filter by mask',options=opts, index=1)
+        dates_opts = df["date"].dt.date.unique()
+        sel_date_opt = st.selectbox('Filter by date',options=dates_opts, index=0)
+
+        if sel_opt== "no-mask":
+            df_f = df[ (df["check"]=="no-mask") & (df["date"].dt.date==sel_date_opt) ]
+            st.write(df_f.to_html(escape=False ,formatters=dict(urls=image_formatter)) , unsafe_allow_html=True)        
+        elif sel_opt== "mask":
+            df_f = df[ (df["check"]=="mask") & (df["date"].dt.date==sel_date_opt) ]
+            st.write(df_f.to_html(escape=False ,formatters=dict(urls=image_formatter)) , unsafe_allow_html=True)        
+        else:
+            st.write(df.to_html(escape=False ,formatters=dict(urls=image_formatter)) , unsafe_allow_html=True)
+    
+    else:
+        st.subheader("Mask Detector: Stopped")
+        cap.release()
+    
 
 if __name__ == "__main__":
     face_cascade = cv2.CascadeClassifier(os.path.join('models','mask_cascade.xml'))

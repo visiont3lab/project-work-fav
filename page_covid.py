@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-
-# https://github.com/streamlit/demo-self-driving/blob/master/streamlit_app.py
+ 
 
 def plot_plotly(df,x, y,title):
     n = df[x].values.tolist()
