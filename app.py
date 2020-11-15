@@ -17,8 +17,8 @@ def main():
 		# set title
 		st.title("FAV: Project Work %s" % (get_current_date()) )
 		# get image logp
-		res, image = get_log_image()
-		if res: st.image(image, caption='',use_column_width=True)
+		#res, image = get_log_image()
+		#if res: st.image(image, caption='',use_column_width=True)
 
 		st.markdown(
 			'''
