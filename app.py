@@ -28,7 +28,8 @@ def main():
 			sudo apt install python3-pip python3-dev virtualenv 
 			virtualenv --python=python3 env
 			source env/bin/activate
-			pip install opencv-python streamlit pydub pyaudio plotly==4.12 
+			#pip install opencv-python streamlit pydub pyaudio plotly==4.12
+			pip install -r requirements.txt
 			# Note: you can use opencv-pỳthon-headless version for server (does not have gui)
 			```
 			
