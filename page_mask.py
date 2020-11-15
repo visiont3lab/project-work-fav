@@ -150,6 +150,7 @@ def page_mask():
     elif choice=="Analisi":
         df  =  pd.read_csv("data.csv", names=["date","check","urls"])
         df["date"] = pd.to_datetime(df["date"], format="%m:%d:%Y-%H:%M:%S", errors='ignore') # pandas timestamp datetime    
+        df = df.sort_values(by=['date'],ascending=False)    
 
         opts = ["mask","no-mask","all"]
         sel_opt = st.selectbox('Filter by mask',options=opts, index=1)
