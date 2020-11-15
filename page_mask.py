@@ -15,6 +15,14 @@ import base64
 import warnings
 warnings.filterwarnings('ignore')
 
+RASPBERRY = False
+if RASPBERRY:
+    import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
+    #GPIO GUARDARE IL NUMERO VERDE DEL DISEGNO
+
+
 def get_time():
     d = datetime.now().strftime("%m:%d:%Y-%H:%M:%S")
     return d
@@ -113,6 +121,10 @@ def page_mask():
                         cv2.imwrite(storage_url, im_color)
                         write_data_on_csv(filename="data.csv",listdata=[time_print,"mask", storage_url])
 
+                        if RASPBERRY:
+                            GPIO.setup(2,GPIO.OUT)
+                            GPIO.output(2,GPIO.HIGH)
+
                     speak_no=0
                 else:
                     text_placeholder.error("Indossare la Mascherina")
@@ -127,6 +139,9 @@ def page_mask():
                         cv2.imwrite(storage_url, im_color)
                         write_data_on_csv(filename="data.csv",listdata=[time_print,"no-mask",storage_url])
 
+                        if RASPBERRY:
+                            GPIO.output(2,GPIO.LOW)
+    
                     speak_yes = 0
 
             image_placeholder.image(im_color, channels="BGR", use_column_width=True)
