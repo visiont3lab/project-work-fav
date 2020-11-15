@@ -35,9 +35,11 @@ def main():
 			## Run
 			
 			```
-			streamlit run app.py
-			```
+			On Your PC or Colab: streamlit run app.py
+			Procfile Heroku:  web: streamlit run --server.enableCORS false --server.port $PORT app.py
 			'''
+
+
 		)
 
 	elif choice_pages==MASKAPP:
