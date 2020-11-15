@@ -23,12 +23,12 @@ def page_mask():
 
     choice = st.radio(label="", options=["Start","Stop"], index=1)
     if choice =="Stop":
-        st.text("Mask Detector: Stopped")
+        st.subheader("Mask Detector: Stopped")
         cap.release()
     
     else:
         
-        st.text("Mask Detector: Started")
+        st.subheader("Mask Detector: Started")
 
         cascade_masks = cv2.CascadeClassifier(os.path.join('models','mask_cascade.xml'))
         cascade_faces = cv2.CascadeClassifier(os.path.join('models','haarcascade_frontalface_default.xml'))
