@@ -88,7 +88,7 @@ def page_mask():
             im_gray = cv2.cvtColor(im_color, cv2.COLOR_BGR2GRAY)
 
 
-            masks = cascade_masks.detectMultiScale(im_gray, 1.1,4,cv2.CASCADE_DO_ROUGH_SEARCH | cv2.CASCADE_SCALE_IMAGE)
+            masks = cascade_masks.detectMultiScale(im_gray, 1.05,4,cv2.CASCADE_DO_ROUGH_SEARCH | cv2.CASCADE_SCALE_IMAGE)
             faces = cascade_faces.detectMultiScale(im_gray, 1.1,4,cv2.CASCADE_DO_ROUGH_SEARCH | cv2.CASCADE_SCALE_IMAGE)
             
             resMasks, biggestMask = findLargestBB(masks)
