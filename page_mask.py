@@ -179,6 +179,7 @@ if __name__ == "__main__":
         # Capture frame-by-frame
         ret, im_color = cap.read()
 
+        im_color = cv2.resize(im_color, (640,480))
 
         # Our operations on the frame come here
         im_gray = cv2.cvtColor(im_color, cv2.COLOR_BGR2GRAY)
