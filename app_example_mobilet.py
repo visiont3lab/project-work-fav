@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import time
 import os
+from utils.myDetector import myCustomDetector
 
 #vanessa.ferrando@gmail.com
 #dkleita@gmail.com
@@ -30,27 +31,26 @@ if choice=="Start":
     st.subheader("Mask Detector: Started")
 
     cap = cv2.VideoCapture(0)
-    cascade_faces = cv2.CascadeClassifier(os.path.join('models','mask_cascade.xml'))
-    #cascade_faces = cv2.CascadeClassifier(os.path.join('models','haarcascade_frontalface_default.xml'))
     
+    mydetector = myCustomDetector()
     
     image_placeholder = st.empty()
+    text_placeholder = st.empty()
     running= True
     while(running):
         # Capture frame-by-frame
         ret, frame = cap.read()
         if ret:
             
-            im_color = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-            im_gray = cv2.cvtColor(im_color,cv2.COLOR_RGB2GRAY)
-            faces = cascade_faces.detectMultiScale(im_gray, 1.1,5,cv2.CASCADE_DO_ROUGH_SEARCH | cv2.CASCADE_SCALE_IMAGE)
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            res, frame, percentage = mydetector.doDetection(frame)
 
-            for (x,y,w,h) in faces:
-                roi = im_gray[y:y+h,x:x+w]
-                cv2.rectangle(im_color,(x,y),(x+w,y+h),(255,0,0),2)
-        
-
-            image_placeholder.image(im_color)
+            if res:
+                text_placeholder.header("Persona trovata: %s" % (str(percentage)))
+            else:
+                text_placeholder.header("Nessuna persona")
+                
+            image_placeholder.image(frame)
             time.sleep(0.033)
     cap.release()
 
