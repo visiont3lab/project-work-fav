@@ -19,7 +19,7 @@ class myCustomDetector:
 
         # load our serialized model from disk
         print("[INFO] loading model...")
-        self.net = cv2.dnn.readNetFromCaffe(os.path.join('extra','MobileNetSSD_deploy.prototxt.txt'),os.path.join('extra','MobileNetSSD_deploy.caffemodel'))
+        self.net = cv2.dnn.readNetFromCaffe(os.path.join('models','MobileNetSSD_deploy.prototxt.txt'),os.path.join('models','MobileNetSSD_deploy.caffemodel'))
 
     def doDetection(self,frame_input):
         res = False
